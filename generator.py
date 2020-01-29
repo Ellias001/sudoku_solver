@@ -1,3 +1,4 @@
+from board_check import *
 import random
 import time
 
@@ -64,3 +65,4 @@ def generateSolvedBoard():
     return board
     
 generateSolvedBoard()
+print(checkBoard(solvedBoard))
