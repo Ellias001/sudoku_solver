@@ -64,5 +64,5 @@ def generateSolvedBoard():
     print("Spent time is " + str(end - start) + " secs")
     return board
     
-generateSolvedBoard()
+solvedBoard = generateSolvedBoard()
 print(checkBoard(solvedBoard))
