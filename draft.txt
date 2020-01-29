@@ -1,0 +1,26 @@
+Algorithm:
+1) Form first line from random numbers (1 to 9) that do not repeat
+2) Form other lines by shifting principle (3, 3, 1)
+3) Swap random rows to make algorithm not so obvious
+
+Forming sudoku board:			Changing rows within block:
+1 2 3 | 4 5 6 | 7 8 9 			4 5 6 | 7 8 9 | 1 2 3 <-
+4 5 6 | 7 8 9 | 1 2 3 <- Shift 3	1 2 3 | 4 5 6 | 7 8 9 <-
+7 8 9 | 1 2 3 | 4 5 6 <- Shift 3 	7 8 9 | 1 2 3 | 4 5 6
+---------------------			---------------------
+8 9 1 | 2 3 4 | 5 6 7 <- Shift 1	8 9 1 | 2 3 4 | 5 6 7
+2 3 4 | 5 6 7 | 8 9 1 <- Shift 3	5 6 7 | 8 9 1 | 2 3 4 <-
+5 6 7 | 8 9 1 | 2 3 4 <- Shift 3	2 3 4 | 5 6 7 | 8 9 1 <-
+---------------------			---------------------
+6 7 8 | 9 1 2 | 3 4 5 <- Shift 1	3 4 5 | 6 7 8 | 9 1 2 <-
+9 1 2 | 3 4 5 | 6 7 8 <- Shift 3	9 1 2 | 3 4 5 | 6 7 8
+3 4 5 | 6 7 8 | 9 1 2 <- Shift 3	6 7 8 | 9 1 2 | 3 4 5 <-
+
+Other options to change board and keep it valid:
+1) Change cols within a block
+2) Change block of cols or rows
+3) Exchange two numbers (all 1s to 2s and on the contrary)
+
+These options are not valid, since...
+1) Numbers in cols are random
+2) There is a special algorithm by shifting rows    
