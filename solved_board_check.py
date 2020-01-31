@@ -60,7 +60,7 @@ def printArr(arr):
         print(str(i) + " ", end="")
     print()
 
-def checkBoard(arr):
+def checkSolvedBoard(arr):
     if not(checkRows(arr)):
         return -1
     if not(checkCols(arr)):
