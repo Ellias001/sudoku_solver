@@ -1,4 +1,4 @@
-from board_check import *
+from solved_board_check import *
 import random
 import time
 
@@ -52,7 +52,7 @@ def generateSolvedBoard():
     print("Spent time is " + str(end - start) + " secs")
     return board
 
-def generateUnsolvedBoard(board):
+#def generateUnsolvedBoard(board):
     
     
 solvedBoard = generateSolvedBoard()
