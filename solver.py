@@ -10,11 +10,11 @@ def solve(board):
         while not checkUnsolvedBoard(board, val, pos):
             val -=- 1
             if val >= 10:
-                printArr(board)
-                val = insertedValue[len(insertedValue) - 1][0]
+                board = insertValue(board, 0, pos)
                 pos = insertedValue[len(insertedValue) - 1][1]
+                val = insertedValue[len(insertedValue) - 1][0]
                 insertedValue.pop()
-                break
+                continue
 
         board = insertValue(board, val, pos)
         insertedValue.append([val, pos])
@@ -34,15 +34,15 @@ def insertValue(board, val, pos: list):
 
 
 unsolvedBoard = [
-    [2, 5, 6, 0, 0, 0, 3, 0, 0],
-    [0, 0, 0, 0, 2, 0, 0, 0, 9],
-    [0, 3, 0, 6, 0, 0, 0, 7, 0],
-    [6, 0, 3, 1, 0, 8, 0, 0, 0],
-    [8, 0, 7, 0, 5, 0, 1, 0, 4],
-    [0, 0, 0, 4, 0, 3, 9, 0, 6],
-    [0, 2, 0, 0, 0, 7, 0, 6, 0],
-    [1, 0, 0, 0, 3, 0, 0, 0, 0],
-    [0, 0, 4, 0, 0, 0, 2, 5, 3]
+    [0, 0, 2, 3, 5, 0, 0, 0, 9],
+    [5, 0, 0, 0, 4, 0, 2, 6, 0],
+    [0, 0, 3, 0, 8, 0, 0, 7, 0],
+    [0, 0, 0, 0, 9, 4, 0, 0, 0],
+    [0, 2, 0, 7, 0, 6, 9, 5, 0],
+    [4, 0, 0, 8, 1, 5, 0, 0, 0],
+    [1, 7, 4, 0, 0, 0, 0, 0, 0],
+    [0, 0, 8, 9, 0, 0, 6, 0, 0],
+    [0, 0, 6, 4, 0, 0, 5, 8, 7]
 ]
 solvedBoard = solve(unsolvedBoard)
 printArr(solvedBoard)
