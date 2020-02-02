@@ -1,4 +1,5 @@
-from solved_board_check import *
+from solved_board_check import checkSolvedBoard
+from solver import solve
 import random
 import time
 
@@ -52,9 +53,19 @@ def generateSolvedBoard():
     print("Spent time is " + str(end - start) + " secs")
     return board
 
-#def generateUnsolvedBoard(board):
+def generateUnsolvedBoard(board):
     
+
+    return board
+    # Algorithm:
+    # 1) Pick random position at the board
+    # 2) Remove it and check weather solver can solve it
+    # 3) Continue removing numbers until you get board
+    #    with certain number of elements
+    # Q: How to check if this table is solvable?
+def isSolvable(arr):
+    return arr
     
 solvedBoard = generateSolvedBoard()
+unsolvedBoard = generateUnsolvedBoard(solvedBoard)
 boardPrint(solvedBoard)
-print(checkBoard(solvedBoard))
