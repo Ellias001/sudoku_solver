@@ -3,8 +3,7 @@
 # 2) isSolvable()
 # 3) generateUnsolvedBoard()
 
-#from solved_board_check import checkSolvedBoard
-#from solver import solve
+from boardChecker import *
 import random
 import time
 
@@ -96,7 +95,12 @@ class Generator:
                     print(" | ", end = "")
                 print(str(self.board[i][j]) + " ", end = "")
             print()
+
+    def getBoard(self):
+        return self.board
         
 generator = Generator()
+checker = Checker()
 generator.generateSolvedBoard()
+print(checker.checkSolvedBoard(generator.getBoard()))
 generator.boardPrint()
