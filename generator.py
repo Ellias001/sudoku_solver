@@ -1,9 +1,4 @@
-# Need to work on:
-# 1) mixBoard()
-# 2) isSolvable()
-# 3) generateUnsolvedBoard()
-
-from boardChecker import *
+from board_checker import *
 import random
 import time
 
@@ -12,8 +7,8 @@ class Generator:
     def __init__(self):
         self.board = [[0 for i in range(9)] for j in range(9)]
 
-    def generateSolvedBoard(self):
-        self.initFirstLine()
+    def generate_solved_board(self):
+        self.init_first_line()
 
         for i in range(1, 9):
             if i % 3 == 0:
@@ -21,9 +16,9 @@ class Generator:
             else:
                 self.shift(i - 1, 3)
         
-        self.mixBoard()
+        self.mix_board()
 
-    def initFirstLine(self):
+    def init_first_line(self):
         self.board[0] = random.sample(range(1, 10), 9)
 
     def shift(self, pos, shiftVal):
@@ -31,23 +26,60 @@ class Generator:
             j = (i + shiftVal) % len(self.board)
             self.board[pos + 1][i] = self.board[pos][j]
 
-    def mixBoard(self):
-        # need to find real random function to excuse pattern
-        # need to add swapCols method
-        # need to add swapSqrRows & swapSqrCols method
+    def mix_board(self, swap_times = 10):
+        mix_functions = ["self.swap_rows()",
+                         "self.swap_sqr_rows()",
+                         "self.swap_cols()",
+                         "self.swap_sqr_cols()"]
+
+        for i in range(swap_times):
+            id_func = random.randrange(0, len(mix_functions))
+            eval(mix_functions[id_func])
+
+
+    def swap_rows(self):
+        right_border = int(len(self.board) / 3)
+        sqr = random.randrange(0, right_border, 1)
+        row1 = random.randrange(0, right_border, 1)
+        row2 = random.randrange(0, right_border, 1)
+
+        pos1 = sqr*3 + row1
+        pos2 = sqr*3 + row2
+        self.board[pos1], self.board[pos2] = \
+                         self.board[pos2], self.board[pos1]
+
+    def swap_sqr_rows(self):
+        right_border = int(len(self.board) / 3)
+        sqr = random.randrange(0, right_border, 1)
+        row1 = random.randrange(0, right_border, 1) * sqr
+        row2 = random.randrange(0, right_border, 1) * sqr
+
         for i in range(3):
-            row1 = int((time.time() * 1000) % 3)
-            row2 = int((time.time() * 1000) % 3)
-            
-            while row1 == row2:
-                row2 = int((time.time() * 1000) % 3)
-                
-            self.swapRows(row1, row2, i)
+            self.board[row1], self.board[row2] = \
+                self.board[row2], self.board[row1]
+            row1 += 1
+            row2 += 1
 
-    def swapRows(self, row1, row2, sqr):
-        self.board[sqr*3 + row1], self.board[sqr*3 + row2] = \
-                         self.board[sqr*3 + row2], self.board[sqr*3 + row1]
+    def swap_cols(self):
+        right_border = int(len(self.board) / 3)
+        sqr = random.randrange(0, right_border, 1)
+        col1 = random.randrange(0, right_border, 1) * sqr
+        col2 = random.randrange(0, right_border, 1) * sqr
 
+        for i in range(len(self.board[0])):
+            self.board[i][col1], self.board[i][col2] = \
+                self.board[i][col2], self.board[i][col1]
+
+    def swap_sqr_cols(self):
+        right_border = int(len(self.board) / 3)
+        sqr = random.randrange(0, right_border, 1)
+        col1 = random.randrange(0, right_border, 1) * sqr
+        col2 = random.randrange(0, right_border, 1) * sqr
+
+        for i in range(len(self.board)):
+            for j in range(3):
+                self.board[j][col1], self.board[j][col2] = \
+                    self.board[j][col2], self.board[j][col1]
 
     #def generateUnsolvedBoard(self):
         #removed = [1, [1, 2]]
@@ -81,11 +113,11 @@ class Generator:
         #    with certain number of elements
         # Q: How to check if this table is solvable?
 
-    def isSolvable(self):
+    def is_solvable(self):
         # check if the board can be solved
-        return
+        return 1
 
-    def boardPrint(self):
+    def board_print(self):
         length  = range(len(self.board))
         for i in length:
             if i % 3 == 0 and i != 0:
@@ -96,11 +128,12 @@ class Generator:
                 print(str(self.board[i][j]) + " ", end = "")
             print()
 
-    def getBoard(self):
+    def get_board(self):
         return self.board
-        
-generator = Generator()
-checker = Checker()
-generator.generateSolvedBoard()
-print(checker.checkSolvedBoard(generator.getBoard()))
-generator.boardPrint()
+
+if __name__ == '__main__':
+    generator = Generator()
+    checker = Checker()
+    generator.generate_solved_board()
+    print(checker.check_solved_board(generator.get_board()))
+    generator.board_print()
