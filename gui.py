@@ -1,9 +1,13 @@
 ########## THINGS TO IMPLEMENT ###########
-# prevent underlining existing values
 # implement representation of how many mistakes are done
-# restart program if 3 mistakes are done
-# change values in unsolved board
 # offer to start again if sudoku is completed
+
+# COMPLETED:
+# change values in unsolved board
+# prevent underlining existing values
+
+# NEED TO BE IMPROVED:
+# restart program if 3 mistakes are done
 import tkinter
 from generator import Generator
 from board_checker import Checker
@@ -11,7 +15,7 @@ from solver import Solver
 
 class Board:
 
-    def __init__(self, master, unsolved_board, solver, cube_size = 50):
+    def __init__(self, master, unsolved_board, solved_board, cube_size = 50):
         self.master = master
         self.unsolved_board = unsolved_board
         self.solved_board = solved_board
@@ -23,6 +27,7 @@ class Board:
         self.selected_rect = None
         self.clicked_cube = None
         self.mistakes = 0
+        self.num_of_zeroes = self.count_zeroes()
         self.draw_lines()
         self.canvas.pack()
 
@@ -36,12 +41,15 @@ class Board:
     def underline(self, event):
         if self.selected_rect != None:
             self.canvas.delete(self.selected_rect)
-        pos1 = self.cube_size * int(event.x / self.cube_size)
-        pos2 = self.cube_size * int(event.y / self.cube_size)
-        cube_pos = [pos1, pos2]
-        self.clicked_cube = [int(pos1 / self.cube_size), int(pos2 / self.cube_size)]
-        x1 = cube_pos[0]
-        y1 = cube_pos[1]
+        pos1 = int(event.x / self.cube_size)
+        pos2 = int(event.y / self.cube_size)
+        self.clicked_cube = [pos1, pos2]
+        
+        if self.unsolved_board[pos2][pos1] != 0:
+            return
+        
+        x1 = pos1 * self.cube_size
+        y1 = pos2 * self.cube_size
         x2 = x1 + self.cube_size
         y2 = y1 + self.cube_size
         self.selected_rect = self.canvas.create_rectangle(x1, y1, x2, y2, outline = "red", width = 2.3)
@@ -56,13 +64,29 @@ class Board:
             y = self.clicked_cube[1]
             if self.solved_board[y][x] == val:
                 self.sqrs[x][y].change_val(val)
+                self.unsolved_board[y][x] = val
+                self.num_of_zeroes -= 1
                 self.canvas.delete(self.selected_rect)
-            else:
+                if self.num_of_zeroes == 0:
+                    self.congrats()
+            elif val != 0:
                 self.mistakes += 1
                 if self.mistakes == 3:
                     self.restart()
                     
     def restart(self):
+        # pickle data
+        self.__init__()
+
+    def count_zeroes(self):
+        num_of_zeroes = 0
+        for i in self.unsolved_board:
+            for j in i:
+                if j == 0:
+                    num_of_zeroes += 1
+        return num_of_zeroes
+
+    def congrats(self):
         pass
 
 class Cube:
@@ -93,30 +117,34 @@ class Cube:
         self.draw(self.canvas)
 
 
+def main():
+    unsolved_board_tuple = (
+            (0, 2, 9, 0, 0, 6, 0, 0, 4),
+            (0, 0, 7, 0, 0, 0, 1, 0, 5),
+            (0, 6, 0, 0, 1, 3, 0, 0, 2),
+            (6, 0, 3, 0, 2, 1, 9, 4, 7),
+            (0, 0, 0, 0, 0, 0, 0, 0, 0),
+            (9, 8, 1, 5, 4, 0, 6, 0, 3),
+            (5, 0, 0, 1, 7, 0, 0, 8, 0),
+            (2, 0, 6, 0, 0, 0, 4, 0, 0),
+            (7, 0, 0, 3, 0, 0, 2, 5, 0)
+    )
 
-unsolved_board_tuple = (
-        (2, 6, 0, 0, 0, 0, 0, 0, 0),
-        (1, 0, 5, 0, 0, 7, 0, 0, 0),
-        (0, 0, 0, 1, 8, 0, 0, 0, 0),
-        (0, 0, 8, 0, 0, 0, 0, 4, 6),
-        (0, 5, 6, 4, 0, 8, 7, 3, 0),
-        (4, 3, 0, 0, 0, 0, 8, 0, 0),
-        (0, 0, 0, 0, 3, 6, 0, 0, 0),
-        (0, 0, 0, 7, 0, 0, 6, 0, 4),
-        (0, 0, 0, 0, 0, 0, 0, 7, 9)
-)
+    root = tkinter.Tk()
+    root.title("Sudoku")
+    solver = Solver()
+    unsolved_board = [list(line) for line in unsolved_board_tuple]
+    solved_board = solver.solve([list(line) for line in unsolved_board_tuple])
+    for i in range(9):
+        for j in range(9):
+            print(solved_board[i][j], end=" ")
+        print()
+    board = Board(root, unsolved_board, solved_board)
 
-root = tkinter.Tk()
-root.title("Sudoku")
-solver = Solver()
-unsolved_board_list = [list(line) for line in unsolved_board_tuple]
-solved_board = solver.solve(unsolved_board_list)
-unsolved_board = [list(line) for line in unsolved_board_tuple]
-board = Board(root, unsolved_board, solved_board)
+    board.canvas.bind("<Button-1>", board.underline)
+    board.master.bind("<Key>", board.change_val)
 
-board.canvas.bind("<Button-1>", board.underline)
-board.master.bind("<Key>", board.change_val)
+    root.mainloop()
 
-root.mainloop()
-
-
+if __name__ == "__main__":
+    main()
