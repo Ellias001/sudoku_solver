@@ -1,13 +1,13 @@
 ########## THINGS TO IMPLEMENT ###########
-# implement representation of how many mistakes are done
 # offer to start again if sudoku is completed
 
 # COMPLETED:
 # change values in unsolved board
 # prevent underlining existing values
-
-# NEED TO BE IMPROVED:
+# make board adaptive (changing cube size will create appropriate table)
+# implement representation of how many mistakes are done
 # restart program if 3 mistakes are done
+
 import tkinter
 from generator import Generator
 from board_checker import Checker
@@ -15,27 +15,31 @@ from solver import Solver
 
 class Board:
 
-    def __init__(self, master, unsolved_board, solved_board, cube_size = 50):
+    def __init__(self, master, unsolved_board, solved_board, cube_size = 50, mistakes_limit = 3):
         self.master = master
         self.unsolved_board = unsolved_board
         self.solved_board = solved_board
         self.cube_size = cube_size
-        canvas_size = cube_size * 9 - 3
-        self.canvas = tkinter.Canvas(self.master, width = canvas_size, height = canvas_size)
+        self.canvas_size = cube_size * 9 - 3
+        self.canvas = tkinter.Canvas(self.master, width = self.canvas_size,\
+                                     height = self.canvas_size + cube_size)
         self.sqrs = [[Cube(self.unsolved_board[i][j], i, j, self.cube_size, self.canvas) \
                       for i in range(9)] for j in range(9)]
         self.selected_rect = None
         self.clicked_cube = None
-        self.mistakes = 0
-        self.num_of_zeroes = self.count_zeroes()
+        self.mistakes = 0 # exits the program if mistakes
+        self.mistakes_limit = mistakes_limit
+        self.num_of_zeroes = self.count_zeroes() # exits the program when board is completed
+
+        self.show_mistake()
         self.draw_lines()
         self.canvas.pack()
 
     def draw_lines(self):
         for i in range(1, 3):
-            x = i * 150
-            self.canvas.create_line(x, 0, x, 450, width = 2.3)
-            self.canvas.create_line(0, x, 450, x, width = 2.3)
+            x = i * self.cube_size * 3
+            self.canvas.create_line(x, 0, x, self.canvas_size + 3, width = 2.3)
+            self.canvas.create_line(0, x, self.canvas_size + 3, x, width = 2.3)
         return
 
     def underline(self, event):
@@ -64,19 +68,29 @@ class Board:
             y = self.clicked_cube[1]
             if self.solved_board[y][x] == val:
                 self.sqrs[x][y].change_val(val)
-                self.unsolved_board[y][x] = val
                 self.num_of_zeroes -= 1
                 self.canvas.delete(self.selected_rect)
                 if self.num_of_zeroes == 0:
                     self.congrats()
             elif val != 0:
                 self.mistakes += 1
-                if self.mistakes == 3:
+                self.show_mistake()
+                if self.mistakes == self.mistakes_limit:
                     self.restart()
-                    
+
+    def show_mistake(self):
+        if self.mistakes == 0:
+            return
+        for i in range(self.mistakes):
+            y1 = self.canvas_size + self.cube_size / 10 + 3
+            x1 = self.cube_size / 10 + i * self.cube_size + 3
+            y2 = self.canvas_size + 9 * self.cube_size / 10 + 3
+            x2 = 9 * self.cube_size / 10 + i * self.cube_size + 3
+            self.canvas.create_rectangle(x1, y1, x2, y2, fill = "red")
+
     def restart(self):
-        # pickle data
-        self.__init__()
+        self.canvas.destroy()
+        self.__init__(self.master, self.unsolved_board, self.solved_board)
 
     def count_zeroes(self):
         num_of_zeroes = 0
@@ -135,13 +149,9 @@ def main():
     solver = Solver()
     unsolved_board = [list(line) for line in unsolved_board_tuple]
     solved_board = solver.solve([list(line) for line in unsolved_board_tuple])
-    for i in range(9):
-        for j in range(9):
-            print(solved_board[i][j], end=" ")
-        print()
     board = Board(root, unsolved_board, solved_board)
 
-    board.canvas.bind("<Button-1>", board.underline)
+    board.master.bind("<Button-1>", board.underline)
     board.master.bind("<Key>", board.change_val)
 
     root.mainloop()
