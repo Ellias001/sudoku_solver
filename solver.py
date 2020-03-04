@@ -3,7 +3,11 @@ from generator import *
 class Solver:
     
     def solve(self, board):
-        self.board = board
+        if isinstance(board, tuple):
+            self.board = self.tuple_to_list(board)
+        else:
+            self.board = board
+        
         inserted_value = []
         checker = Checker()
         while checker.check_solved_board(self.board):
@@ -37,6 +41,12 @@ class Solver:
     def insert_value(self, val, pos: list):
         self.board[pos[0]][pos[1]] = val
         return self.board
+
+    def tuple_to_list(self, board):
+        list_board = []
+        for row in board:
+            list_board.append(list(row))
+        return list_board
 
     def board_print(self):
         length  = range(len(self.board))
