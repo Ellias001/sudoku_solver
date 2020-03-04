@@ -1,13 +1,3 @@
-########## THINGS TO IMPLEMENT ###########
-# offer to start again if sudoku is completed
-
-# COMPLETED:
-# change values in unsolved board
-# prevent underlining existing values
-# make board adaptive (changing cube size will create appropriate table)
-# implement representation of how many mistakes are done
-# restart program if 3 mistakes are done
-
 import tkinter
 from generator import Generator
 from board_checker import Checker
@@ -15,10 +5,13 @@ from solver import Solver
 
 class Board:
 
-    def __init__(self, master, unsolved_board, solved_board, cube_size = 50, mistakes_limit = 3):
+    def __init__(self, master, generator, cube_size = 50, mistakes_limit = 3):
         self.master = master
-        self.unsolved_board = unsolved_board
-        self.solved_board = solved_board
+        self.generator = generator
+        self.generator.generate_solved_board()
+        self.generator.generate_unsolved_board()
+        self.unsolved_board = generator.get_board()
+        self.solved_board = generator.get_solution()
         self.cube_size = cube_size
         self.canvas_size = cube_size * 9 - 3
         self.canvas = tkinter.Canvas(self.master, width = self.canvas_size,\
@@ -27,7 +20,7 @@ class Board:
                       for i in range(9)] for j in range(9)]
         self.selected_rect = None
         self.clicked_cube = None
-        self.mistakes = 0 # exits the program if mistakes
+        self.mistakes = 0 # exits the program if specific amount of mistakes are done
         self.mistakes_limit = mistakes_limit
         self.num_of_zeroes = self.count_zeroes() # exits the program when board is completed
 
@@ -71,7 +64,7 @@ class Board:
                 self.num_of_zeroes -= 1
                 self.canvas.delete(self.selected_rect)
                 if self.num_of_zeroes == 0:
-                    self.congrats()
+                    self.restart()
             elif val != 0:
                 self.mistakes += 1
                 self.show_mistake()
@@ -90,7 +83,7 @@ class Board:
 
     def restart(self):
         self.canvas.destroy()
-        self.__init__(self.master, self.unsolved_board, self.solved_board)
+        self.__init__(self.master, self.generator)
 
     def count_zeroes(self):
         num_of_zeroes = 0
@@ -104,7 +97,6 @@ class Board:
         pass
 
 class Cube:
-
     def __init__(self, val, row, col, size, canvas):
         self.val = val
         self.row = row
@@ -132,24 +124,12 @@ class Cube:
 
 
 def main():
-    unsolved_board_tuple = (
-            (0, 2, 9, 0, 0, 6, 0, 0, 4),
-            (0, 0, 7, 0, 0, 0, 1, 0, 5),
-            (0, 6, 0, 0, 1, 3, 0, 0, 2),
-            (6, 0, 3, 0, 2, 1, 9, 4, 7),
-            (0, 0, 0, 0, 0, 0, 0, 0, 0),
-            (9, 8, 1, 5, 4, 0, 6, 0, 3),
-            (5, 0, 0, 1, 7, 0, 0, 8, 0),
-            (2, 0, 6, 0, 0, 0, 4, 0, 0),
-            (7, 0, 0, 3, 0, 0, 2, 5, 0)
-    )
-
     root = tkinter.Tk()
     root.title("Sudoku")
-    solver = Solver()
-    unsolved_board = [list(line) for line in unsolved_board_tuple]
-    solved_board = solver.solve([list(line) for line in unsolved_board_tuple])
-    board = Board(root, unsolved_board, solved_board)
+
+    generator = Generator()
+    
+    board = Board(root, generator)
 
     board.master.bind("<Button-1>", board.underline)
     board.master.bind("<Key>", board.change_val)
