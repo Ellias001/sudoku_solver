@@ -92,10 +92,7 @@ class Board:
                 if j == 0:
                     num_of_zeroes += 1
         return num_of_zeroes
-
-    def congrats(self):
-        pass
-
+    
 class Cube:
     def __init__(self, val, row, col, size, canvas):
         self.val = val
