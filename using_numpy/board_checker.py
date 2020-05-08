@@ -51,4 +51,4 @@ class BoardChecker:
 
 if __name__ == "__main__":
     bc = BoardChecker()
-    #bc.print_board()
+    bc.print_board()

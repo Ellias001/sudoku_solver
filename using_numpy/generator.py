@@ -7,7 +7,7 @@ class SudokuGenerator(bc.BoardChecker):
         if board_size % 3 != 0:
             raise ValueError
         board = [[0 for i in range(board_size)] for j in range(board_size)]
-        self.board = np.array(board)
+        self.board = np.array(board, dtype="int8")
         self.board_size = board_size
 
     def generate(self):
@@ -32,42 +32,46 @@ class SudokuGenerator(bc.BoardChecker):
             self.board[pos][i] = self.board[pos - 1][j]
 
     def __mix(self, swap_times = 15):
-        mix_functions = ["__transpose()",
-                         "__swap_rows()",
-                         "__swap_cols()",
-                         "__swap_sqr_rows()",
-                         "__swap_sqr_cols()"]
-        list_len = len(mix_functions)
-
         while swap_times != 0:
+            id_func = random.randrange(0, 5)
+            if id_func == 1:
+                self.__transpose()
+            elif id_func == 2:
+                self.__swap_rows()
+            elif id_func == 3:
+                self.__swap_cols()
+            elif id_func == 4:
+                self.__swap_sqr_rows()
+            elif id_func == 5:
+                self.__swap_sqr_cols()
             swap_times -= 1
-            id_func = random.randrange(0, list_len)
-            getattr(self, mix_functions[id_func])
 
     def __transpose(self):
         self.board = self.board.T
 
     def __swap_rows(self):
         pos = self.__find_random_position()
-        self.board[pos] = self.board[reversed(pos)]
+        self.board[[pos[0], pos[1]]] = self.board[[pos[1], pos[0]]]
 
     def __swap_cols(self):
         pos = self.__find_random_position()
-        self.board[:,pos] = self.board[:,reversed(pos)]
+        self.board[:,[pos[0], pos[1]]] = self.board[:,[pos[1], pos[0]]]
     
     def __swap_sqr_rows(self):
         pos = self.__find_random_position()
-        pos %= 3
+        pos %= 3; pos *= 3
 
         for i in range(int(self.board_size / 3)):
-            self.board[pos + i] = self.board[reversed(pos + i)]
+            self.board[[pos[0], pos[1]]] = self.board[[pos[1], pos[0]]]
+            pos += 1
 
     def __swap_sqr_cols(self):
         pos = self.__find_random_position()
-        pos %= 3
+        pos %= 3; pos *= 3
 
         for i in range(int(self.board_size / 3)):
-            self.board[:,pos + i] = self.board[:,reversed(pos + i)]
+            self.board[:,[pos[0], pos[1]]] = self.board[:,[pos[1], pos[0]]]
+            pos += 1
 
     def __find_random_position(self):
         right_border = int(self.board_size / 3)
@@ -77,7 +81,7 @@ class SudokuGenerator(bc.BoardChecker):
 
         pos1 = sqr * 3 + i
         pos2 = sqr * 3 + j
-        return np.array([pos1, pos2], dtype='int8')
+        return np.array([pos1, pos2], dtype="int8")
 
 if __name__ == '__main__':
     bg = SudokuGenerator()
