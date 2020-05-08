@@ -1,9 +1,11 @@
 import numpy as np
 import board_checker as bc
+import math
 
 class SudokuGenerator:
     def __init__(self, board_size = 9):
-        if board_size % 3 != 0:
+        self.sqr_size = int(math.sqrt(board_size))
+        if board_size % self.sqr_size != 0:
             raise ValueError
         solved = [[0 for i in range(board_size)] for j in range(board_size)]
         self.solved = np.array(solved, dtype="int8")
@@ -13,7 +15,7 @@ class SudokuGenerator:
         self.__generate_first_line()
         
         for i in range(1, self.board_size):
-            if i % 3 == 0:
+            if i % self.sqr_size == 0:
                 self.__shift_line(i, 1)
             else:
                 self.__shift_line(i, 3)
@@ -58,28 +60,27 @@ class SudokuGenerator:
     
     def __swap_sqr_rows(self):
         pos = self.__find_random_position()
-        pos %= 3; pos *= 3
+        pos %= self.sqr_size; pos *= self.sqr_size
 
-        for _ in range(int(self.board_size / 3)):
+        for _ in range(self.sqr_size):
             self.solved[[pos[0], pos[1]]] = self.solved[[pos[1], pos[0]]]
             pos += 1
 
     def __swap_sqr_cols(self):
         pos = self.__find_random_position()
-        pos %= 3; pos *= 3
+        pos %= self.sqr_size; pos *= self.sqr_size
 
-        for _ in range(int(self.board_size / 3)):
+        for _ in range(self.sqr_size):
             self.solved[:,[pos[0], pos[1]]] = self.solved[:,[pos[1], pos[0]]]
             pos += 1
 
     def __find_random_position(self):
-        right_border = int(self.board_size / 3)
-        sqr = np.random.randint(0, right_border)
-        i = np.random.randint(0, right_border)
-        j = np.random.randint(0, right_border)
+        sqr = np.random.randint(0, self.sqr_size)
+        i = np.random.randint(0, self.sqr_size)
+        j = np.random.randint(0, self.sqr_size)
 
-        pos1 = sqr * 3 + i
-        pos2 = sqr * 3 + j
+        pos1 = sqr * self.sqr_size + i
+        pos2 = sqr * self.sqr_size + j
         return np.array([pos1, pos2], dtype="int8")
     
     def get_solved_board(self):
