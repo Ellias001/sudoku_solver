@@ -3,7 +3,23 @@ import board_checker as bc
 import math
 
 class SudokuGenerator:
+    """Designed to generate solved and unsolved sudoku problems.
+
+    Attributes:
+        solved: solved sudoku problem.
+        board_size: length and width of sudoku board.
+        sqr_size: length and width of sudoku squares.
+    """
     def __init__(self, board_size = 9):
+        """Initializes instance attributes.
+        
+        Args:
+            board_size: length and width of sudoku board.
+                default: 9.
+
+        Raises:
+            ValueError: if board_size is invalid (has no integer square root).
+        """
         self.sqr_size = int(math.sqrt(board_size))
         if board_size % self.sqr_size != 0:
             raise ValueError
@@ -12,6 +28,10 @@ class SudokuGenerator:
         self.board_size = board_size
 
     def generate(self):
+        """Generates solved and unsolved sudoku.
+
+        Creates solved sudoku problem and decomposes it to get unsolved problem.
+        """
         self.__generate_first_line()
         
         for i in range(1, self.board_size):
@@ -23,16 +43,38 @@ class SudokuGenerator:
         self.__mix()
 
     def __generate_first_line(self):
+        """Generates first line.
+
+        Creates and array of valid values ([1, board_size] with no duplicates)
+        and assigns it to the first line.
+        """
         nums = range(1, self.board_size + 1)
         line = np.random.choice(nums, size=self.board_size, replace=False)
         self.solved[0] = np.array(line)
 
     def __shift_line(self, pos, shiftVal):
+        """Fills intended board line by shifting previous line.
+
+        Moves all values of line #pos in board by shiftVal value.
+
+        Args:
+            pos: index of line that will be created.
+            shiftVal: number by which values of previous line will be moved.
+        """
         for i in range(self.board_size):
             j = (shiftVal + i) % self.board_size
             self.solved[pos][i] = self.solved[pos - 1][j]
 
     def __mix(self, swap_times = 15):
+        """Mixes sudoku board by calling particular functions.
+
+        Calls swap_rows, swap_sqr_rows, swap_cols, swap_sqr_cols methods to make board
+        building algorithm less obvious for users.
+
+        Args:
+            swap_times: number of swaps that will be performed on sudoku board.
+                Default value: 15
+        """
         while swap_times != 0:
             id_func = np.random.random_integers(0, 5)
             if id_func == 1:
