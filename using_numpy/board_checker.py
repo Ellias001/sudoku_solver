@@ -161,6 +161,3 @@ class BoardChecker:
             if el == False:
                 return False
         return True
-
-if __name__ == "__main__":
-    bc = BoardChecker()

@@ -93,5 +93,5 @@ if __name__ == '__main__':
     bg.generate()
     board = bg.get_solved_board()
 
-    bc.print_board(board, len(board))
+    bc.print_board(board)
     print(checker.is_valid(board))
