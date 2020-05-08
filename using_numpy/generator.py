@@ -1,6 +1,5 @@
 import numpy as np
 import board_checker as bc
-import random
 
 class SudokuGenerator:
     def __init__(self, board_size = 9):
@@ -23,7 +22,7 @@ class SudokuGenerator:
 
     def __generate_first_line(self):
         nums = range(1, self.board_size + 1)
-        line = random.sample(nums, self.board_size)
+        line = np.random.choice(nums, size=self.board_size, replace=False)
         self.solved[0] = np.array(line)
 
     def __shift_line(self, pos, shiftVal):
