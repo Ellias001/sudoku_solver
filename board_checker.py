@@ -51,8 +51,7 @@ class BoardChecker:
             board_size: length and width of sudoku board.
                 default: 9
         """
-        board = [[0 for i in range(board_size)] for j in range(board_size)]
-        self.board = np.array(board, dtype='int8')
+        self.board = np.array((board_size, board_size), dtype='int8')
         self.board_size = board_size
         self.arr = np.array([i+1 for i in range(self.board_size)], dtype='int8')
 

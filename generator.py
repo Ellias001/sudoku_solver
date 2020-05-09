@@ -23,8 +23,7 @@ class SudokuGenerator:
         self.sqr_size = int(math.sqrt(board_size))
         if board_size % self.sqr_size != 0:
             raise ValueError
-        solved = [[0 for i in range(board_size)] for j in range(board_size)]
-        self.solved = np.array(solved, dtype="int8")
+        self.solved = np.zeros((board_size, board_size), dtype="int8")
         self.board_size = board_size
 
     def generate(self):
