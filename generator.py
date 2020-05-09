@@ -76,7 +76,7 @@ class SudokuGenerator:
                 Default value: 15
         """
         while swap_times != 0:
-            id_func = np.random.random_integers(0, 5)
+            id_func = np.random.random_integers(0, 4)
             if id_func == 1:
                 self.__transpose()
             elif id_func == 2:
@@ -90,17 +90,21 @@ class SudokuGenerator:
             swap_times -= 1
 
     def __transpose(self):
+        """Transposes current board."""
         self.solved = self.solved.T
 
     def __swap_rows(self):
+        """Swaps two random rows in the same square."""
         pos = self.__find_random_position()
         self.solved[[pos[0], pos[1]]] = self.solved[[pos[1], pos[0]]]
 
     def __swap_cols(self):
+        """Swaps two random columns in the same square."""
         pos = self.__find_random_position()
         self.solved[:,[pos[0], pos[1]]] = self.solved[:,[pos[1], pos[0]]]
     
     def __swap_sqr_rows(self):
+        """Swaps two random square rows."""
         pos = self.__find_random_position()
         pos %= self.sqr_size; pos *= self.sqr_size
 
@@ -109,6 +113,7 @@ class SudokuGenerator:
             pos += 1
 
     def __swap_sqr_cols(self):
+        """Swaps two random square columns."""
         pos = self.__find_random_position()
         pos %= self.sqr_size; pos *= self.sqr_size
 
@@ -117,15 +122,29 @@ class SudokuGenerator:
             pos += 1
 
     def __find_random_position(self):
+        """Returns random position on the board.
+
+        Uses np.random to choose the square row/column and find
+        row/column in that square.
+
+        Retrurns:
+            pos: numpy array of coordinates of that position. 
+        """
         sqr = np.random.randint(0, self.sqr_size)
         i = np.random.randint(0, self.sqr_size)
         j = np.random.randint(0, self.sqr_size)
 
         pos1 = sqr * self.sqr_size + i
         pos2 = sqr * self.sqr_size + j
-        return np.array([pos1, pos2], dtype="int8")
+        pos = np.array([pos1, pos2], dtype="int8")
+        return pos
     
     def get_solved_board(self):
+        """Getter method for solved sudoku.
+
+        Returns:
+            solved: solved attribute of an instance
+        """
         return self.solved
 
 if __name__ == '__main__':
