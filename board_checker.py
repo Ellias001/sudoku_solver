@@ -77,6 +77,38 @@ class BoardChecker:
             return False
         return True
 
+    def can_insert(self, board, pos, value):
+        self.board = board
+        if not self.can_insert_row(pos, value):
+            return False
+        if not self.can_insert_col(pos, value):
+            return False
+        if not self.can_insert_sqr(pos, value):
+            return False
+
+    def can_insert_row(self, pos, value):
+        try:
+            np.where(self.board[pos[0]] == value)[0][0]
+        except IndexError:
+            return True
+        return False
+
+    def can_insert_col(self, pos, value):
+        tmp = self.board.T
+        try:
+            np.where(tmp[pos[1]] == value)[0][0]
+        except IndexError:
+            return True
+        return False
+
+    def can_insert_sqr(self, pos, value):
+        sqr = self.__find_sqr(pos[0], pos[1])
+        try:
+            np.where(sqr[pos[1]] == value)[0][0]
+        except IndexError:
+            return True
+        return False
+
     def __is_valid_rows(self):
         """Checks every row in sudoku board for validity.
 
