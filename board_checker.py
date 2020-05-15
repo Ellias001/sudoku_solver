@@ -85,6 +85,7 @@ class BoardChecker:
             return False
         if not self.can_insert_sqr(pos, value):
             return False
+        return True
 
     def can_insert_row(self, pos, value):
         try:
@@ -102,9 +103,9 @@ class BoardChecker:
         return False
 
     def can_insert_sqr(self, pos, value):
-        sqr = self.__find_sqr(pos[0], pos[1])
+        sqr = self.__find_sqr(pos[0] // 3, pos[1] // 3)
         try:
-            np.where(sqr[pos[1]] == value)[0][0]
+            np.where(sqr == value)[0][0]
         except IndexError:
             return True
         return False
