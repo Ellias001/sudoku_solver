@@ -26,8 +26,8 @@ def print_board(board):
            print("------------------------")
         for j in range(board_size):
             if j % 3 == 0 and j != 0:
-                print(" | ", end = "")
-            print(str(board[i][j]), end = " ")
+                print("| ", end = "")
+            print(board[i, j], end = " ")
         print()
 
 class BoardChecker:
