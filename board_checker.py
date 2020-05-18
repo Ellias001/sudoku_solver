@@ -79,22 +79,22 @@ class BoardChecker:
 
     def can_insert(self, board, pos, value):
         self.board = board
-        if not self.can_insert_row(pos, value):
+        if not self.__can_insert_row(pos, value):
             return False
-        if not self.can_insert_col(pos, value):
+        if not self.__can_insert_col(pos, value):
             return False
-        if not self.can_insert_sqr(pos, value):
+        if not self.__can_insert_sqr(pos, value):
             return False
         return True
 
-    def can_insert_row(self, pos, value):
+    def __can_insert_row(self, pos, value):
         try:
             np.where(self.board[pos[0]] == value)[0][0]
         except IndexError:
             return True
         return False
 
-    def can_insert_col(self, pos, value):
+    def __can_insert_col(self, pos, value):
         tmp = self.board.T
         try:
             np.where(tmp[pos[1]] == value)[0][0]
@@ -102,11 +102,9 @@ class BoardChecker:
             return True
         return False
 
-    def can_insert_sqr(self, pos, value):
+    def __can_insert_sqr(self, pos, value):
         sqr = self.__find_sqr(pos[0] // 3, pos[1] // 3)
-        try:
-            np.where(sqr == value)[0][0]
-        except IndexError:
+        if np.where(sqr == value)[0].size == 0:
             return True
         return False
 
@@ -173,7 +171,7 @@ class BoardChecker:
         k = 0
         for i in range(num_of_sqrs):
             for j in range(num_of_sqrs):
-                arr[k] = self.board[a*3 + i][b*3 + j]
+                arr[k] = self.board[a*3 + i, b*3 + j]
                 k += 1
         return arr
 
@@ -189,7 +187,6 @@ class BoardChecker:
             True: if all values in an array are True.
             False: if at least on values in an array are False.
         """
-        for el in arr:
-            if el == False:
-                return False
-        return True
+        if np.where(arr == False)[0].size == 0:
+            return True
+        return False
