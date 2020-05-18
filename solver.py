@@ -43,7 +43,7 @@ class SudokuSolver:
         Args:
             board: unsolved sudoku board.
         """
-        self.__init__(board)
+        self.__init__(np.array(board))
         checker = bc.BoardChecker()
         values = np.ones(len(self.zero_pos[0]), dtype='int8')
         cur_pos = 0
@@ -55,7 +55,7 @@ class SudokuSolver:
             while not checker.can_insert(self.board, pos, val):
                 val += 1
                 if val > self.board_size:
-                    self.board[pos[0]][pos[1]] = 0
+                    self.board[pos[0], pos[1]] = 0
                     values[cur_pos] = 0
                     cur_pos -= 1
                     val = values[cur_pos]
@@ -63,22 +63,22 @@ class SudokuSolver:
             
             values[cur_pos] = val
             cur_pos += 1
-            self.board[pos[0]][pos[1]] = val
+            self.board[pos[0], pos[1]] = val
 
         return self.board.copy()
 
 if __name__ == "__main__":
     ss = SudokuSolver()
     board = [
-        [2, 6, 0, 0, 0, 0, 0, 0, 0],
-        [1, 0, 5, 0, 0, 7, 0, 0, 0],
-        [0, 0, 0, 1, 8, 0, 0, 0, 0],
-        [0, 0, 8, 0, 0, 0, 0, 4, 6],
-        [0, 5, 6, 4, 0, 8, 7, 3, 0],
-        [4, 3, 0, 0, 0, 0, 8, 0, 0],
-        [0, 0, 0, 0, 3, 6, 0, 0, 0],
-        [0, 0, 0, 7, 0, 0, 6, 0, 4],
-        [0, 0, 0, 0, 0, 0, 0, 7, 9]
+        [3, 2, 0, 0, 1, 4, 9, 0, 0],
+        [0, 0, 0, 0, 6, 3, 0, 0, 0],
+        [4, 6, 0, 0, 0, 8, 0, 0, 7],
+        [2, 0, 0, 0, 0, 6, 4, 0, 3],
+        [0, 3, 8, 0, 2, 0, 5, 7, 0],
+        [6, 0, 4, 1, 0, 0, 0, 0, 9],
+        [8, 0, 0, 9, 0, 0, 0, 5, 2],
+        [0, 0, 0, 3, 8, 0, 0, 0, 0],
+        [0, 0, 2, 6, 7, 0, 0, 8, 4]
     ]
     board = np.array(board)
     bc.print_board(ss.solve(board))
