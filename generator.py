@@ -1,4 +1,5 @@
 import numpy as np
+import solver as ss
 import board_checker as bc
 import math
 
@@ -7,13 +8,19 @@ class SudokuGenerator:
 
     Attributes:
         solved: solved sudoku problem.
+        unsolved: unsolved sudoku board.
+        solver: SudokuSolver class instance from solver module.
+                Dedicated to solve sudoku problems.
         board_size: length and width of sudoku board.
         sqr_size: length and width of sudoku squares.
+        difficulty: represents how many non-zero numbers unsolved board should have.
     """
-    def __init__(self, board_size = 9):
+    def __init__(self, board_size = 9, difficulty = 33):
         """Initializes instance attributes.
         
         Args:
+            difficulty: represents how many non-zero numbers unsolved board should have.
+                default: 33.
             board_size: length and width of sudoku board.
                 default: 9.
 
@@ -23,13 +30,16 @@ class SudokuGenerator:
         self.sqr_size = int(math.sqrt(board_size))
         if board_size % self.sqr_size != 0:
             raise ValueError
+        self.difficulty = difficulty
+        self.solver = ss.SudokuSolver()
         self.solved = np.zeros((board_size, board_size), dtype="int8")
         self.board_size = board_size
 
     def generate(self):
         """Generates solved and unsolved sudoku.
 
-        Creates solved sudoku problem and decomposes it to get unsolved problem.
+        Creates solved sudoku problem and calls __generate_unsolved() method
+        to create unsolved sudoku problem.
         """
         self.__generate_first_line()
         
@@ -40,6 +50,89 @@ class SudokuGenerator:
                 self.__shift_line(i, 3)
 
         self.__mix()
+        self.__generate_unsolved()
+
+    def get_solved(self):
+        """Getter method for unsolved attribute.
+        
+        unsolved attribute represents unsolved sudoku board.
+
+        Returns:
+            unsolved.copy(): copy of unsolved board whith type np.arrray(dtype='int8').
+        """
+        return self.solved.copy()
+
+    def get_unsolved(self):
+        """Getter method for unsolved attribute.
+        
+        solved attribute represents solved sudoku board.
+
+        Returns:
+            solved.copy(): copy of solved board whith type np.arrray(dtype='int8').
+        """
+        return self.unsolved.copy()
+
+    def __generate_unsolved(self):
+        """Generates unsolved sudoku board.
+
+        Removes random numbers from solved sudoku while it stays valid 
+        until certain difficulty is reached.
+        """
+        self.unsolved = self.solved.copy()
+        current_difficulty = self.board_size ** 2
+        positions_list = self.__make_position_list()
+
+        for i, j in positions_list:
+            if self.__is_solvable():
+                self.unsolved[i, j] = 0
+                current_difficulty -= 1
+            if current_difficulty == self.difficulty:
+                break
+
+    def __make_position_list(self):
+        """Makes list of board positions.
+        
+        Creates a list of all possible board positions and shuffles it.
+
+        Returns:
+            res: shuffled list of all possible board positions.
+        """
+        res = list()
+        for i in range(self.board_size):
+            for j in range(self.board_size):
+                res.append((i, j))
+        np.random.shuffle(res)
+        return res
+
+    def __is_solvable(self):
+        """Checks if unsolved board is solvable by solver.
+
+        Solves unsolved sudoku board and creates temporary object for it.
+        Compares original solved board and temporary, if they are different
+        returns False, if they are same, returns True.
+
+        Returns:
+            True: if board is solvable.
+            False: if board is not solvable.
+        """
+        tmp_board = self.solver.solve(self.unsolved)
+        compare = tmp_board == self.solved
+        if np.where(compare == False)[0].size == 0:
+            return True
+        return False
+
+    def set_difficulty(self, difficulty):
+        """Setter method for difficulty attribute.
+
+        Args:
+            difficulty: new difficulty to be assigned.
+        
+        Raises:
+            ValueError: if difficulty is invalid (higher or less than possible values).
+        """
+        if difficulty > self.board_size ** 2 or difficulty <= 0:
+            raise ValueError
+        self.difficulty = difficulty
 
     def __generate_first_line(self):
         """Generates first line.
@@ -62,7 +155,7 @@ class SudokuGenerator:
         """
         for i in range(self.board_size):
             j = (shiftVal + i) % self.board_size
-            self.solved[pos][i] = self.solved[pos - 1][j]
+            self.solved[pos, i] = self.solved[pos - 1, j]
 
     def __mix(self, swap_times = 15):
         """Mixes sudoku board by calling particular functions.
@@ -75,7 +168,7 @@ class SudokuGenerator:
                 Default value: 15
         """
         while swap_times != 0:
-            id_func = np.random.random_integers(0, 4)
+            id_func = np.random.randint(0, 6, 1)
             if id_func == 1:
                 self.__transpose()
             elif id_func == 2:
@@ -137,21 +230,13 @@ class SudokuGenerator:
         pos2 = sqr * self.sqr_size + j
         pos = np.array([pos1, pos2], dtype="int8")
         return pos
-    
-    def get_solved_board(self):
-        """Getter method for solved sudoku.
-
-        Returns:
-            solved: solved attribute of an instance
-        """
-        return self.solved
 
 if __name__ == '__main__':
     bg = SudokuGenerator()
     checker = bc.BoardChecker()
     
     bg.generate()
-    board = bg.get_solved_board()
+    board = bg.get_unsolved()
 
     bc.print_board(board)
     print(checker.is_valid(board))
