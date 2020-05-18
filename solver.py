@@ -64,8 +64,8 @@ class SudokuSolver:
             values[cur_pos] = val
             cur_pos += 1
             self.board[pos[0]][pos[1]] = val
-        
-        return self.board
+
+        return self.board.copy()
 
 if __name__ == "__main__":
     ss = SudokuSolver()
