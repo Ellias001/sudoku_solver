@@ -60,7 +60,7 @@ class SudokuGenerator:
         Returns:
             unsolved.copy(): copy of unsolved board whith type np.arrray(dtype='int8').
         """
-        return self.solved.copy()
+        return list(self.solved)
 
     def get_unsolved(self):
         """Getter method for unsolved attribute.
@@ -70,7 +70,7 @@ class SudokuGenerator:
         Returns:
             solved.copy(): copy of solved board whith type np.arrray(dtype='int8').
         """
-        return self.unsolved.copy()
+        return list(self.unsolved)
 
     def __generate_unsolved(self):
         """Generates unsolved sudoku board.
